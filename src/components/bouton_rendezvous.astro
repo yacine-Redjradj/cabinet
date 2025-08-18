@@ -1,0 +1,59 @@
+---
+interface Props {
+  url: string;
+  label?: string;
+}
+const { url, label = "Prendre rendez-vous" } = Astro.props;
+---
+
+<style>
+  .rendezvous-btn {
+    position: fixed;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 60;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 700;
+    border-radius: .75rem;
+    padding: .85rem 1.15rem;
+    background: #1d4ed8; /* blue-700 */
+    color: #fff;
+    box-shadow: 0 12px 24px rgba(0,0,0,.18);
+    transform: translateY(0);                 /* taille fixe */
+    transition: transform 140ms ease,         /* déplacement uniquement */
+                box-shadow 200ms ease,
+                background-color 200ms ease;
+    -webkit-tap-highlight-color: transparent; /* mobile */
+    touch-action: manipulation;
+    will-change: transform;
+  }
+  .rendezvous-btn:hover {
+    background:#1e40af;
+    transform: translateY(-2px);              /* léger lift au survol */
+    box-shadow: 0 16px 28px rgba(0,0,0,.20);
+  }
+  .rendezvous-btn:active {
+    transform: translateY(-3px);              /* monte au clic */
+    box-shadow: 0 12px 22px rgba(0,0,0,.18);
+  }
+  .rendezvous-btn:focus-visible {
+    outline: 3px solid rgba(59,130,246,.45);
+    outline-offset: 2px;
+  }
+  .rendezvous-btn svg { width: 18px; height: 18px; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rendezvous-btn { transition: none; }
+  }
+</style>
+
+<a href={url} class="rendezvous-btn" rel="noopener noreferrer">
+  <!-- icône calendrier -->
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+    <rect x="3" y="4" width="18" height="18" rx="2"></rect>
+    <path d="M16 2v4M8 2v4M3 10h18"></path>
+  </svg>
+  <span>{label}</span>
+</a>

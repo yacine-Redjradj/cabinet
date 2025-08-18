@@ -1,0 +1,614 @@
+---
+/** CSS global */
+import "../styles/global.css";
+
+/** Composant : bouton RDV flottant */
+import BoutonRendezvous from "../components/bouton_rendezvous.astro";
+
+/** === SEO (perso) === */
+const SITE_URL = "https://www.exemple.com/"; // ← remplace par ton domaine
+const OG_IMAGE = SITE_URL + "image/og-cover.jpg"; // 1200×630 recommandé
+const TITLE = "Médecine générale à Suresnes — Dr Alioua";
+const DESCRIPTION =
+  "Consultations de médecine générale à Suresnes. Secteur 1, Carte Vitale, traumatologie, mésothérapie, polygraphie. Prise de rendez-vous en ligne.";
+
+/** JSON-LD principal (sans numéro de téléphone) */
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "MedicalClinic",
+  name: "Centre de consultation - Médecine générale - Dr Alioua",
+  url: SITE_URL,
+  image: OG_IMAGE,
+  address: {
+    "@type": "PostalAddress",
+    streetAddress: "11 Place de Stalingrad",
+    postalCode: "92150",
+    addressLocality: "Suresnes",
+    addressCountry: "FR",
+  },
+  medicalSpecialty: "GeneralPractice",
+  openingHoursSpecification: [
+    {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      opens: "09:00",
+      closes: "19:00",
+    },
+  ],
+  priceRange: "€€",
+  sameAs: ["https://www.doctolib.fr/medecin-urgentiste/paris/adam-alioua"],
+};
+
+/** JSON-LD additionnels (SEO) */
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Accueil", item: SITE_URL },
+    { "@type": "ListItem", position: 2, name: "Médecine générale à Suresnes", item: SITE_URL },
+  ],
+};
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Acceptez-vous la Carte Vitale ?",
+      acceptedAnswer: { "@type": "Answer", text: "Oui, cabinet conventionné secteur 1. Tiers payant Sécurité sociale." },
+    },
+    {
+      "@type": "Question",
+      name: "Quels sont les tarifs des consultations ?",
+      acceptedAnswer: { "@type": "Answer", text: "De 30 € à 75 € selon l’acte. Tout dépassement est annoncé à l’avance." },
+    },
+    {
+      "@type": "Question",
+      name: "Comment prendre rendez-vous ?",
+      acceptedAnswer: { "@type": "Answer", text: "En ligne via Doctolib." },
+    },
+    {
+      "@type": "Question",
+      name: "En cas d’urgence ?",
+      acceptedAnswer: { "@type": "Answer", text: "Appelez le 15 (Samu)." },
+    },
+  ],
+};
+---
+
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{TITLE}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- SEO -->
+    <meta name="description" content={DESCRIPTION} />
+    <meta name="robots" content="index,follow,max-image-preview:large" />
+    <link rel="canonical" href={SITE_URL} />
+    <link rel="alternate" href={SITE_URL} hreflang="fr" />
+    <link rel="alternate" href={SITE_URL} hreflang="x-default" />
+    <meta name="theme-color" content="#1d4ed8" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={TITLE} />
+    <meta property="og:description" content={DESCRIPTION} />
+    <meta property="og:url" content={SITE_URL} />
+    <meta property="og:image" content={OG_IMAGE} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Cabinet du Dr Alioua à Suresnes" />
+    <meta property="og:locale" content="fr_FR" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={TITLE} />
+    <meta name="twitter:description" content={DESCRIPTION} />
+    <meta name="twitter:image" content={OG_IMAGE} />
+    <meta name="twitter:image:alt" content="Cabinet du Dr Alioua à Suresnes" />
+
+    <!-- Iconify pour les icônes (sans toucher au HTML existant) -->
+    <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js" defer></script>
+
+    <!-- Perf -->
+    <link rel="preload" as="image" href="/image/clinique_cite_jardin1.jpg" />
+
+    <!-- CSS slider -->
+    <link rel="stylesheet" href="/styles/slider.css" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/image/favicon.jpg" type="image/x-icon" />
+
+    <!-- JSON-LD -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
+    <script type="application/ld+json" set:html={JSON.stringify(breadcrumbLd)}></script>
+    <script type="application/ld+json" set:html={JSON.stringify(faqLd)}></script>
+
+    <!-- Styles locaux -->
+    <style>
+      /* Liens & pastilles type RATP */
+      .mode-link{display:flex;align-items:center;gap:.5rem;text-decoration:none;color:#374151;padding:.25rem .35rem;border-radius:.5rem;transition:background-color .2s ease, transform .12s ease}
+      .mode-link:hover{background:#eff6ff}
+      .mode-ic{width:24px;height:24px;flex:0 0 24px}
+      .ratp-chip{display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:.78rem;line-height:1rem;letter-spacing:.01em;padding:.05rem .5rem;border-radius:9999px;min-width:1.6rem}
+      .ratp-chip--bus{color:#fff;background:#16a34a}
+      .ratp-chip--tram{color:#fff;background:#0ea5a4}
+      .ratp-chip--transi{color:#fff;background:#7c3aed}
+      svg text{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+      /* Boutons (ripple) */
+      .ripple-btn{position:relative;overflow:hidden;transition: transform 140ms ease, box-shadow 200ms ease, background-color 200ms ease}
+      .ripple-btn:hover{transform:translateY(-1px)}
+      .ripple-btn:active{transform:translateY(0)}
+      /* Cartes cliquables */
+      .click-card{position:relative;overflow:hidden;cursor:pointer;outline:none;transition: transform 140ms ease, box-shadow 200ms ease, background-color 200ms ease}
+      .click-card:hover{box-shadow:0 10px 18px rgba(0,0,0,.08);transform:translateY(-2px)}
+      .click-card:active{transform:translateY(0)}
+      .click-card:focus-visible{box-shadow:0 0 0 3px rgba(59,130,246,.4)}
+      /* Effet ripple */
+      .ripple-effect{position:absolute;border-radius:9999px;transform:scale(0);pointer-events:none;background:rgba(59,130,246,.35);animation:ripple 520ms ease-out forwards}
+      @keyframes ripple{to{transform:scale(3.5);opacity:0}}
+    </style>
+  </head>
+
+  <body class="bg-gray-50 font-sans text-gray-800">
+    <!-- HEADER -->
+    <header class="fixed top-0 left-0 w-full bg-blue-700 text-white shadow-md z-50">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 text-center">
+        <h1 class="text-lg sm:text-2xl font-bold">
+          Centre de consultation — Médecine générale — Dr Alioua
+        </h1>
+      </div>
+    </header>
+
+    <!-- CONTENU -->
+<main class="pt-16 sm:pt-20 px-4 sm:px-6 max-w-7xl mx-auto">   <!-- avant: pt-24 sm:pt-28 -->
+  <section aria-label="Sélecteur d'établissement" class="mt-3 sm:mt-4"> <!-- avant: mt-6 sm:mt-8 -->
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 mb-4 sm:mb-6">
+          <button id="btn-cite-jardins"
+            class="ripple-btn w-full sm:flex-1 py-2.5 px-4 rounded-lg shadow-md font-semibold text-center transition-colors duration-200 bg-blue-700 text-white">
+            Centre de santé Cité-jardins
+          </button>
+          <button id="btn-urgmed-genv"
+            class="ripple-btn w-full sm:flex-1 py-2.5 px-4 rounded-lg shadow-md font-semibold text-center transition-colors duration-200 bg-blue-100 text-blue-800 hover:bg-blue-200">
+            Centre médical URGMED Genv
+          </button>
+        </div>
+
+        <!-- Slider + Carte d'infos -->
+        <div class="flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch">
+          <!-- SLIDER -->
+          <!-- ==========================================
+             SLIDER (gauche) + CARTE D'INFOS (droite)
+             - Empilé sur mobile, côte à côte dès md
+             - Hauteurs synchronisées
+             ========================================== -->
+        <div class="flex flex-col md:flex-row gap-4 sm:gap-6 items-stretch">
+          <!-- SLIDER -->
+          <div class="md:w-1/2 w-full">
+            <div id="slider" class="relative overflow-hidden rounded-xl shadow-lg h-56 sm:h-64 md:h-[28rem]">
+              <div id="slides" class="flex transition-transform duration-500 ease-in-out h-full">
+                <!-- LCP: pas de lazy, dimensions explicites pour limiter le CLS -->
+                <img
+                  src="/image/clinique_cite_jardin1.jpg"
+                  width="1280" height="720"
+                  class="w-full h-full object-cover flex-shrink-0"
+                  alt="Entrée du Centre de santé Cité-jardins à Suresnes"
+                />
+                <!-- Suivantes en lazy -->
+                <img
+                  src="/image/clinique_sersennes_1.jpg"
+                  width="1280" height="720" loading="lazy"
+                  class="w-full h-full object-cover flex-shrink-0"
+                  alt="Intérieur de la clinique"
+                />
+                <img
+                  src="/image/clinique_sersennes_2.jpg"
+                  width="1280" height="720" loading="lazy"
+                  class="w-full h-full object-cover flex-shrink-0"
+                  alt="Salle d'attente de la clinique" 
+                />
+              </div>
+
+              <!-- Contrôles du slider -->
+              <button
+                onclick="prevSlide()" class="absolute top-1/2 left-2 -translate-y-1/2 bg-blue-700 text-white p-2 rounded-full shadow hover:bg-blue-800 focus:outline-none focus:ring"
+                aria-label="Image précédente">‹</button>
+              <button
+                onclick="nextSlide()" class="absolute top-1/2 right-2 -translate-y-1/2 bg-blue-700 text-white p-2 rounded-full shadow hover:bg-blue-800 focus:outline-none focus:ring"
+                aria-label="Image suivante">›</button>
+            </div>
+          </div>
+
+          <!-- CARTE D'INFOS (clic) -->
+          <div class="md:w-1/2 w-full">
+            <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800 h-56 sm:h-64 md:h-[28rem]"
+              aria-label="Informations du centre" tabindex="0">
+              <div class="h-full overflow-auto space-y-5">
+                <div>
+                  <h2 id="clinic-name-card1" class="text-lg sm:text-xl font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                      <path d="M3 21h18M5 21V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14M8 10h2M14 10h2M8 14h2M14 14h2M8 18h8" />
+                    </svg>
+                    Centre de santé Cité-jardins
+                  </h2>
+                  <p id="clinic-address-card1" class="text-sm sm:text-base flex items-start gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mt-0.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+                    </svg>
+                    11 Place de Stalingrad, 92150 Suresnes
+                  </p>
+                </div>
+
+                <div class="grid sm:grid-cols-2 gap-4 sm:gap-6">
+                  <div>
+                    <h3 class="font-semibold flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                        <path d="M8 9h8M8 13h8" />
+                      </svg>
+                      Tarifs et remboursement
+                    </h3>
+                    <ul class="list-disc list-inside ml-4 text-sm space-y-1">
+                      <li>Conventionné secteur 1</li>
+                      <li>Carte Vitale acceptée ✅</li>
+                      <li>Tiers payant : Sécurité sociale</li>
+                    </ul>
+                    <a href="https://www.doctolib.fr/medecin-urgentiste/paris/adam-alioua?pid=practice-664379#pricing"
+                      class="text-blue-700 underline-offset-2 hover:underline text-sm mt-2 inline-flex items-center gap-1"
+                      rel="noopener noreferrer">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                        <path d="M14 3h7v7M10 14L21 3M21 14v7h-7" />
+                        <path d="M3 21h7v-7H3z" />
+                      </svg>
+                      Voir les tarifs
+                    </a>
+                  </div>
+
+                  <div>
+                    <h3 class="font-semibold flex items-center gap-2">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                        <rect x="3" y="6" width="18" height="12" rx="2" />
+                        <path d="M3 10h18" />
+                      </svg>
+                      Moyens de paiement
+                    </h3>
+                    <p class="text-sm">Espèces et carte bancaire</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h3 class="font-semibold flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                      <rect x="7" y="4" width="10" height="16" rx="2" />
+                      <path d="M9 4v2h6V4M9 10h6M9 14h6" />
+                    </svg>
+                    Expertises et actes
+                  </h3>
+                  <ul class="list-disc list-inside ml-4 text-sm space-y-1">
+                    <li>Médecine générale</li>
+                    <li>Polygraphie</li>
+                    <li>Traumatologie</li>
+                    <li>Traumatologie du sport</li>
+                  </ul>
+                </div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <!-- Accès + Google Map -->
+      <section class="access-card mt-6 sm:mt-8 bg-blue-50 rounded-xl p-5 sm:p-6 shadow-lg click-card"
+        aria-label="Accès et informations pratiques" tabindex="0">
+        <div class="flex flex-col md:flex-row gap-5 sm:gap-6">
+          <div class="md:w-1/2 space-y-4">
+            <h2 class="text-base sm:text-lg font-semibold text-gray-800 flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+              </svg>
+              Carte et informations d'accès
+            </h2>
+
+            <div>
+              <h3 id="clinic-name-card2" class="font-semibold text-gray-700 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <path d="M3 21h18M5 21V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v14M8 10h2M14 10h2M8 14h2M14 14h2M8 18h8" />
+                </svg>
+                Centre de santé Cité-jardins
+              </h3>
+              <p id="clinic-address-card2" class="text-sm sm:text-base flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mt-0.5 text-blue-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+                </svg>
+                11 Place de Stalingrad, 92150 Suresnes
+              </p>
+            </div>
+
+            <!-- Transports -->
+            <div id="transport-info" class="space-y-1.5">
+              <h3 class="font-semibold text-gray-700 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="11" rx="2" />
+                  <circle cx="8" cy="17" r="1.5" /><circle cx="16" cy="17" r="1.5" />
+                </svg>
+                Moyens de transport
+              </h3>
+
+              <!-- BUS 544 -->
+              <a class="mode-link" href="https://maps.google.com/?q=Place%20De%20Stalingrad%2092150%20Suresnes%20BUS%20544" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="11" rx="2" />
+                  <circle cx="8" cy="17" r="1.5" /><circle cx="16" cy="17" r="1.5" />
+                </svg>
+                <span class="ratp-chip ratp-chip--bus">BUS 544</span>
+                <span>Arrêt Place de Stalingrad</span>
+              </a>
+
+              <!-- BUS 241 -->
+              <a class="mode-link" href="https://maps.google.com/?q=Stalingrad%2092150%20Suresnes%20BUS%20241" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="4" y="5" width="16" height="11" rx="2" />
+                  <circle cx="8" cy="17" r="1.5" /><circle cx="16" cy="17" r="1.5" />
+                </svg>
+                <span class="ratp-chip ratp-chip--bus">BUS 241</span>
+                <span>Arrêt Stalingrad</span>
+              </a>
+
+              <!-- Transilien L -->
+              <a class="mode-link" href="https://maps.google.com/?q=Gare%20du%20Val%20d%27Or%20Suresnes" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M4 18V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10" />
+                  <path d="M7 8h10" /><path d="M6 18l-2 2" /><path d="M18 18l2 2" />
+                </svg>
+                <span class="ratp-chip ratp-chip--transi">L</span>
+                <span>Gare du Val d'Or — Transilien ligne L</span>
+              </a>
+
+              <!-- TRAM T2 -->
+              <a class="mode-link" href="https://maps.google.com/?q=Tram%20T2%20Suresnes%20Longchamp" target="_blank" rel="noopener">
+                <svg xmlns="http://www.w3.org/2000/svg" class="mode-ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 18V9a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v9" />
+                  <path d="M7 18l-2 2" /><path d="M17 18l2 2" />
+                </svg>
+                <span class="ratp-chip ratp-chip--tram">T2</span>
+                <span>Station Suresnes — Longchamp</span>
+              </a>
+            </div>
+
+            <div id="practical-info">
+              <h3 class="font-semibold text-gray-700 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+                  <rect x="3" y="3" width="18" height="18" rx="2"/>
+                  <path d="M9 16V8h4a3 3 0 0 1 0 6H9z" />
+                </svg>
+                Parking public
+              </h3>
+              <p class="text-sm sm:text-base">119 Avenue de Fouilleuse, Suresnes</p>
+            </div>
+          </div>
+
+          <!-- Google Map -->
+          <div class="md:w-1/2">
+            <div class="h-56 sm:h-64 md:h-[22rem]">
+              <iframe
+                class="w-full h-full rounded-xl border-0"
+                loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade"
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2625.3364969018423!2d2.213264676408226!3d48.80521097132924!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e6717a0224192b%3A0xdc7237e1b5d19d85!2s11%20Place%20de%20Stalingrad%2C%2092150%20Suresnes%2C%20France!5e0!3m2!1sen!2sfr!4v1700000000000!5m2!1sen!2sfr"
+                title="Carte Google - Centre de santé Cité-jardins"></iframe>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cartes d'informations (clic) -->
+      <section id="info-cards" class="space-y-5 sm:space-y-6 mt-6 sm:mt-8">
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="12" cy="8" r="3" />
+              <path d="M4 20a8 8 0 0 1 16 0" />
+            </svg>
+            Présentation
+          </h2>
+          <p>Le Dr Alioua vous reçoit en consultation. Ses domaines d'expertise incluent :</p>
+          <ul class="list-disc ml-5 mt-2 space-y-1">
+            <li>Médecine générale</li>
+            <li>Traumatologie</li>
+            <li>Mésothérapie</li>
+            <li>Polygraphie (diagnostic et traitement)</li>
+          </ul>
+          <p class="mt-2">N'hésitez pas à prendre rendez-vous pour toute consultation.</p>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M3 12h18" />
+              <path d="M12 3a15 15 0 0 1 0 18" />
+              <path d="M12 3a15 15 0 0 0 0 18" />
+            </svg>
+            Langues parlées
+          </h2>
+          <p>Arabe et Français</p>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <circle cx="12" cy="10" r="4" />
+              <path d="M8 14l-2 6 4-3 4 3-2-6" />
+            </svg>
+            Diplômes nationaux et universitaires
+          </h2>
+          <div class="space-y-1.5">
+            <p><strong>2018</strong> — Capacité de Médecine d'Urgence (CAMU) — Faculté de médecine site Bichat — Université Paris Cité</p>
+            <p><strong>2017</strong> — D.U. Urgences vitales pour les médecins généralistes — Faculté de médecine — Sorbonne Université</p>
+          </div>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M4 4h12v16H4z" />
+              <path d="M10 4v16" />
+            </svg>
+            Autres formations
+          </h2>
+          <p><strong>2016</strong> — Atlas — Brest</p>
+          <p><strong>2016</strong> — ACLS — Paris</p>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="3" y="7" width="18" height="12" rx="2" />
+              <path d="M9 7V5h6v2" />
+            </svg>
+            Expérience
+          </h2>
+          <ul class="list-disc ml-5 space-y-1">
+            <li>Médecin — Centre Hospitalier Rives de Seine — Neuilly-sur-Seine — Urgences</li>
+            <li>Médecin — Hôpital Privé de Vitry — Vitry-sur-Seine — Urgences</li>
+            <li>2022–2023 — Médecin — Cabinet de médecine libérale — Paris 11 — Cabinet</li>
+          </ul>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="9" />
+              <path d="M12 7v5l3 3" />
+            </svg>
+            Horaires et coordonnées
+          </h2>
+          <p><strong>Horaires d'ouverture</strong><br />Aujourd'hui : 09h00 - 13h00, 14h00 - 19h00</p>
+          <p class="mt-2"><strong>Contact d'urgence</strong><br />En cas d'urgence, contactez le 15 (Samu)</p>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <rect x="4" y="4" width="16" height="16" rx="2" />
+              <path d="M8 9h8M8 13h8" />
+            </svg>
+            Tarifs
+          </h2>
+          <p>de 30 € à 75 €</p>
+          <p class="mt-1 text-sm">
+            Ces honoraires vous sont communiqués à titre indicatif par le soignant. Ils peuvent varier selon le type de soins finalement réalisés en cabinet,
+            le nombre de consultations et les actes additionnels nécessaires. En cas de dépassement des tarifs, le soignant doit en avertir préalablement le patient.
+          </p>
+        </article>
+
+        <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800" tabindex="0">
+          <h2 class="text-lg sm:text-xl font-semibold mb-2 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
+              <path d="M12 3l7 4v6c0 5-3.5 9-7 10-3.5-1-7-5-7-10V7l7-4z" />
+            </svg>
+            Informations légales
+          </h2>
+          <p><strong>Numéro RPPS</strong><br />10107838939</p>
+          <p class="mt-1"><strong>Numéro ADELI</strong><br />921845012</p>
+        </article>
+      </section>
+
+      <!-- FAQ visible (aligne le JSON-LD) -->
+      <article class="click-card bg-blue-50 p-5 sm:p-6 rounded-xl shadow-lg text-gray-800 mt-4 sm:mt-6 mb-8 sm:mb-12" tabindex="0">
+        <h2 class="text-lg sm:text-xl font-semibold mb-3 flex items-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-blue-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M9.5 9.5a2.5 2.5 0 1 1 4.5 1.5c-.6.6-1.2.9-1.8 1.2-.6.3-1.2.7-1.2 1.8" stroke-linecap="round" stroke-linejoin="round"></path>
+            <circle cx="12" cy="17" r="1.2" fill="currentColor" stroke="none"></circle>
+          </svg>
+          Questions fréquentes
+        </h2>
+        <details class="mb-2">
+          <summary class="font-medium cursor-pointer">Acceptez-vous la Carte Vitale ?</summary>
+          <div class="mt-2 text-sm text-gray-700">Oui, le cabinet est conventionné secteur 1 et accepte la Carte Vitale. Le tiers payant Sécurité sociale est assuré.</div>
+        </details>
+        <details class="mb-2">
+          <summary class="font-medium cursor-pointer">Quels sont les tarifs des consultations ?</summary>
+          <div class="mt-2 text-sm text-gray-700">De 30 € à 75 € selon l’acte. En cas de dépassement, vous êtes informé avant la consultation.</div>
+        </details>
+        <details class="mb-2">
+          <summary class="font-medium cursor-pointer">Comment prendre rendez-vous ?</summary>
+          <div class="mt-2 text-sm text-gray-700">La prise de rendez-vous se fait en ligne via Doctolib.</div>
+        </details>
+        <details>
+          <summary class="font-medium cursor-pointer">En cas d’urgence ?</summary>
+          <div class="mt-2 text-sm text-gray-700">Pour toute urgence vitale, composez le <strong>15</strong> (Samu).</div>
+        </details>
+      </article>
+
+      <article  class="mt-4 sm:mt-6 mb-8 sm:mb-12" tabindex="0"></article>
+    </main>
+
+    <!-- Scripts existants -->
+    <script src="/js/slider.js" defer></script>
+    <script src="/js/clinic_selector.js" defer></script>
+    <script src="/js/animation_cards.js" defer></script>
+
+    <!-- Ripple sur éléments demandés -->
+    <script defer>
+      (function(){
+        function addRipple(e, el){
+          const rect = el.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const ripple = document.createElement('span');
+          ripple.className = 'ripple-effect';
+          ripple.style.width = ripple.style.height = size + 'px';
+          const srcX = (e.clientX || (e.touches && e.touches[0].clientX)) - rect.left - size/2;
+          const srcY = (e.clientY || (e.touches && e.touches[0].clientY)) - rect.top  - size/2;
+          ripple.style.left = srcX + 'px';
+          ripple.style.top = srcY + 'px';
+          el.appendChild(ripple);
+          ripple.addEventListener('animationend', () => ripple.remove());
+        }
+        function bindRipple(el){
+          if(!el) return;
+          el.addEventListener('click', (e)=>addRipple(e, el), {passive:true});
+          el.addEventListener('touchstart', (e)=>addRipple(e, el), {passive:true});
+        }
+        window.addEventListener('DOMContentLoaded', ()=>{
+          bindRipple(document.getElementById('btn-cite-jardins'));
+          bindRipple(document.getElementById('btn-urgmed-genv'));
+          bindRipple(document.querySelector('article.click-card')); // carte infos (droite du slider)
+          bindRipple(document.querySelector('.access-card'));       // carte accès
+        });
+      })();
+    </script>
+
+    <!-- Icônes + liens dynamiques pour les transports (sans modifier ton HTML) -->
+    <script defer>
+      window.addEventListener('DOMContentLoaded', () => {
+        const CITY = "Suresnes";
+        document.querySelectorAll('#transport-info a.mode-link').forEach(a => {
+          const chip = a.querySelector('.ratp-chip');
+          const spans = a.querySelectorAll('span');
+          const labelSpan = spans[spans.length - 1]; // ex: "Arrêt Place de Stalingrad"
+          const stop = (labelSpan?.textContent || "").replace(/^Arrêt\s*/i,'').trim();
+          const lineText = (chip?.textContent || "").trim(); // ex: "BUS 544" / "T2" / "L"
+          // Construire un lien Google Maps propre
+          const query = [stop, CITY, lineText].filter(Boolean).join(' ');
+          a.href = "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(query);
+          a.target = "_blank";
+          a.rel = "noopener";
+
+          // Injecter une icône avec Iconify selon le type
+          const isTram = chip?.classList.contains('ratp-chip--tram');
+          const isTrain = chip?.classList.contains('ratp-chip--transi');
+          const iconName = isTram ? "mdi:tram" : isTrain ? "mdi:train-car" : "mdi:bus";
+          const ico = document.createElement('iconify-icon');
+          ico.setAttribute('icon', iconName);
+          ico.style.fontSize = '20px';
+          a.insertBefore(ico, chip);
+        });
+      });
+    </script>
+
+    <!-- Bouton RDV flottant -->
+    <BoutonRendezvous url="https://www.doctolib.fr/medecin-urgentiste/paris/adam-alioua?pid=practice-664379#pricing" />
+  </body>
+</html>

@@ -1,0 +1,26 @@
+---
+const { title } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="fr" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{title}</title>
+    <link rel="stylesheet" href="/styles/global.css" />
+  </head>
+  <body class="font-sans bg-white text-gray-900 h-full flex flex-col">
+    <header class="bg-blue-700 text-white p-4 text-center text-xl font-semibold">
+      Clinique du Dr Alioua
+    </header>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full">
+      <slot /> <!-- 🔥 c’est ça qu’il faut utiliser -->
+    </main>
+
+    <footer class="bg-gray-100 text-center py-4 text-sm text-gray-600">
+      &copy; 2025 Clinique du Dr Alioua – Tous droits réservés
+    </footer>
+  </body>
+</html>

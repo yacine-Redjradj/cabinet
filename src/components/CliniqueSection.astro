@@ -1,0 +1,75 @@
+---
+// src/components/CliniqueSection.astro
+// Change ces valeurs si besoin :
+const imageUrl =
+  "/images/clinique.jpg"; // Mets ta photo dans /public/images/
+const mapUrl =
+  "https://goo.gl/maps/4yvm1L7dEwUM4u3G8"; // Lien Google Maps
+const bookingUrl =
+  "https://www.doctolib.fr/medecin-urgentiste/paris/adam-alioua"; // Lien Doctolib
+---
+<section
+  class="grid md:grid-cols-2 gap-10 items-center py-14 md:py-20 max-w-6xl mx-auto px-4 overflow-hidden"
+>
+  <!-- Image clinique -->
+  <figure
+    class="relative group animate-fade-in-up"
+  >
+    <img
+      src={imageUrl}
+      alt="Façade de la clinique"
+      class="rounded-2xl shadow-xl transform-gpu transition duration-700 ease-out group-hover:scale-105"
+      loading="lazy"
+    />
+  </figure>
+
+  <!-- Description -->
+  <div class="space-y-6 animate-fade-in-up delay-200">
+    <h2 class="text-3xl md:text-4xl font-bold text-blue-800">
+      Centre de santé&nbsp;Cité-jardins
+    </h2>
+
+    <p class="text-gray-700">
+      11&nbsp;Place de&nbsp;Stalingrad, 92150&nbsp;Suresnes
+    </p>
+
+    <div class="border-l-4 border-blue-600 pl-4">
+      <h3 class="font-semibold text-lg text-blue-700">Tarifs et remboursement</h3>
+      <p class="text-sm text-gray-600">
+        Conventionné secteur 1.<br />
+        Carte Vitale acceptée – Tiers payant Sécurité sociale.
+      </p>
+    </div>
+
+    <div>
+      <h3 class="font-semibold text-lg text-blue-700">Expertises et actes</h3>
+      <ul class="list-disc list-inside text-gray-700 space-y-1 text-sm">
+        <li>Médecine générale</li>
+        <li>Polygraphie</li>
+        <li>Traumatologie</li>
+        <li>Traumatologie du sport</li>
+      </ul>
+    </div>
+
+    <!-- Boutons -->
+    <div class="flex flex-wrap gap-4 pt-4">
+      <a
+        href={mapUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg shadow hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition"
+      >
+        Itinéraire
+      </a>
+
+      <a
+        href={bookingUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-block bg-green-600 text-white px-6 py-3 rounded-lg shadow hover:bg-green-700 focus:outline-none focus:ring-4 focus:ring-green-300 transition"
+      >
+        Prendre rendez-vous
+      </a>
+    </div>
+  </div>
+</section>
